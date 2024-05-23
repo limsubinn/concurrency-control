@@ -66,4 +66,28 @@ class StockServiceTest {
         Stock stock = stockRepository.findById(1L).get();
         assertEquals(0, stock.getQuantity());
     }
+
+    @Test
+    void 동시에_100개의_요청_synchronized() throws InterruptedException {
+        // when
+        int threadCount = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i=0; i<threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    stockService.synchronizedDecrease(1L, 1L);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        // then
+        Stock stock = stockRepository.findById(1L).get();
+        assertEquals(0, stock.getQuantity());
+    }
 }

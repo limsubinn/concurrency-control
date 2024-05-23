@@ -24,4 +24,17 @@ public class StockService {
         // 갱신된 값 저장
         stockRepository.saveAndFlush(stock);
     }
+
+    @Transactional
+    public synchronized void synchronizedDecrease(Long id, Long quantity) {
+        // Stock 조회
+        Stock stock = stockRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Stock을 조회할 수 없습니다."));
+
+        // 재고 감소
+        stock.decrease(quantity);
+
+        // 갱신된 값 저장
+        stockRepository.saveAndFlush(stock);
+    }
 }
