@@ -4,6 +4,7 @@ import com.example.stock.domain.Stock;
 import com.example.stock.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -12,7 +13,7 @@ public class StockService {
 
     private final StockRepository stockRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW) // 부모의 트랜잭션과 별도로 수행
     public void decrease(Long id, Long quantity) {
         // Stock 조회
         Stock stock = stockRepository.findById(id)
